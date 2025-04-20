@@ -1,13 +1,9 @@
 name: Binary Builds
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - "v*.*.*"
-      - "!v*-rc*"
-      - "!v*-dev"
-      - "!v*-beta*"
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

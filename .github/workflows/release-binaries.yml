@@ -42,33 +42,22 @@ jobs:
           find internal/resources/static/css -name '*.css' -type f -print -exec cleancss -o {} {} \;
           find internal/resources/static/js -name '*.js' -type f -print -exec uglifyjs {} -o {} \;
 
-      - name: Get the version
-        id: get_version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
-          if [[ $VERSION == v* ]]; then
-            VERSION=${VERSION:1}
-          fi
-          echo "VERSION_NUM=${VERSION}" >> $GITHUB_OUTPUT
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          echo "MAJOR=${MAJOR}" >> $GITHUB_OUTPUT
-          echo "MINOR=${MINOR}" >> $GITHUB_OUTPUT
-          echo "PATCH=${PATCH}" >> $GITHUB_OUTPUT
+      - name: Get current timestamp
+        id: timestamp
+        run: echo "::set-output name=now::$(date +'%Y%m%d%H%M%S')"
 
       - name: Create Build Directory
         run: mkdir -p build
 
       - name: Build for Linux (amd64)
-        run: GOOS=linux GOARCH=amd64 go build -ldflags "-X 'wiki-go/internal/version.Version=${{ steps.get_version.outputs.VERSION }}'" -o build/wiki-go-linux-amd64 .
+        run: GOOS=linux GOARCH=amd64 go build -ldflags "-X 'wiki-go/internal/version.Version=${{ steps.timestamp.outputs.now }}'" -o build/wiki-go-linux-amd64 .
 
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+      - name: Upload Binary to Release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: Release ${{ steps.get_version.outputs.VERSION }}
-          body: ${{ env.CHANGELOG }}
-          draft: false
-          prerelease: false
-          files: |
-            build/wiki-go-linux-amd64
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/wiki-go-linux-amd64
+          tag: ${{ steps.timestamp.outputs.now }}
+          overwrite: true
+          file_glob: false
+          release_name: "Release ${{ steps.timestamp.outputs.now }}"

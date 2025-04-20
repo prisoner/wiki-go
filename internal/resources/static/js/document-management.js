@@ -44,12 +44,10 @@
             docTitleInput.addEventListener('input', function() {
                 const title = this.value;
                 const slug = title.toLowerCase()
-                    .replace(/[^\w\s-]/g, '') // Remove special chars
-                    .replace(/\s+/g, '-') // Replace spaces with dashes
-                    .replace(/-+/g, '-') // Replace multiple dashes with single dash
+                    .replace(/[^a-zA-Z\u4e00-\u9fa5\d\s-]/g, '') // Remove special chars
                     .trim();
-                
-                docSlugInput.value = slug;
+                const spts = slug.split(/\s+/);
+                docSlugInput.value = [("" + Date.now()).substring(5), ...spts].join('-');
             });
         }
         

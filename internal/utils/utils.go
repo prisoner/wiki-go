@@ -12,7 +12,7 @@ func SanitizePath(path string) string {
 	path = strings.Trim(path, "/")
 
 	// Replace any unsafe characters with dashes
-	re := regexp.MustCompile(`[^a-zA-Z0-9_\-/]`)
+	re := regexp.MustCompile(`[^a-zA-Z0-9\p{Han}_\-/]`)
 	path = re.ReplaceAllString(path, "-")
 
 	// Replace consecutive slashes with a single slash

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,8 +16,11 @@ import (
 )
 
 func main() {
+	cfgFile := flag.String("c", config.ConfigFilePath, "Path to the configuration file")
+	flag.Parse()
+
 	// Load configuration
-	cfg, err := config.LoadConfig(config.ConfigFilePath)
+	cfg, err := config.LoadConfig(*cfgFile)
 	if err != nil {
 		log.Fatal("Error loading config:", err)
 	}

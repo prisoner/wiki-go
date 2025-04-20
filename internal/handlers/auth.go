@@ -55,7 +55,7 @@ func CheckAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Return user information including admin status
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"username": session.Username,
 		"is_admin": session.IsAdmin,
 	})
